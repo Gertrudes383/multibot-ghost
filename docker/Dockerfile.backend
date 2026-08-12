@@ -1,0 +1,67 @@
+# Dockerfile.backend — Build multi-estagio do backend Node.js
+#
+# Estagio 1: Instala dependencias
+# Estagio 2: Imagem de producao enxuta
+
+# === Estagio 1: Dependencias ===
+FROM node:20-alpine AS deps
+
+WORKDIR /app
+
+# Copia apenas arquivos de dependencia para cache otimizado
+COPY backend/package.json backend/package-lock.json* backend/yarn.lock* backend/pnpm-lock.yaml* ./
+
+# Instala dependencias de producao apenas
+RUN if [ -f pnpm-lock.yaml ]; then \
+      corepack enable pnpm && pnpm install --frozen-lockfile --prod; \
+    elif [ -f yarn.lock ]; then \
+      yarn install --frozen-lockfile --production; \
+    elif [ -f package-lock.json ]; then \
+      npm ci --omit=dev; \
+    else \
+      npm install --omit=dev; \
+    fi
+
+# === Estagio 2: Producao ===
+FROM node:20-alpine AS production
+
+LABEL maintainer="MultiBots Platform"
+LABEL description="Backend API da plataforma MultiBots"
+
+RUN apk add --no-cache wget tini
+
+RUN addgroup -g 1001 -S appgroup && \
+    adduser -S appuser -u 1001 -G appgroup
+
+WORKDIR /app
+
+# Copia dependencias do estagio anterior
+COPY --from=deps /app/node_modules ./node_modules
+
+# Copia codigo backend
+COPY backend/ .
+
+# Copia database ao lado do backend (../../database/ desde src/*/)
+COPY database/ ./database/
+
+# Symlink para ../../../database/ desde src/middleware/ e similares
+RUN ln -s /app/database /database
+
+# Remove arquivos desnecessarios
+RUN rm -rf \
+    tests/ \
+    __tests__/ \
+    .env.example \
+    .eslintrc* \
+    .prettierrc* \
+    jest.config*
+
+ENV NODE_ENV=production
+ENV PORT=9999
+
+USER appuser
+
+EXPOSE 9999
+
+ENTRYPOINT ["/sbin/tini", "--"]
+CMD ["node", "src/server.js"]

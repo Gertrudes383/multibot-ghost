@@ -1,0 +1,36 @@
+:root {
+  /* Core backgrounds */
+  --mb-bg-950: #01040d;
+  --mb-bg-900: #030919;
+  --mb-bg-850: #060f25;
+  --mb-surface-900: #040b1e;
+  --mb-surface-850: #06112a;
+
+  /* Brand / accent */
+  --mb-accent-300: #35c5ff;
+  --mb-accent-400: #2abcf8;
+  --mb-accent-500: #007ded;
+  --mb-accent-600: #0065c0;
+
+  /* Text */
+  --mb-text-primary: #ecf6ff;
+  --mb-text-secondary: #d4e6ff;
+  --mb-text-muted: #93b2d8;
+  --mb-text-caption: #6f8db8;
+
+  /* Borders / states */
+  --mb-border-soft: rgba(143, 209, 255, 0.22);
+  --mb-border-mid: rgba(63, 155, 255, 0.24);
+  --mb-border-strong: rgba(53, 197, 255, 0.7);
+  --mb-error: #ff9da8;
+  --mb-success: #5cecae;
+  --mb-warning: #ffd377;
+  --mb-info: #68caff;
+
+  /* Effects */
+  --mb-shadow-card: 0 26px 74px -52px rgba(7, 27, 88, 0.9);
+  --mb-shadow-panel: 0 24px 70px -48px rgba(3, 17, 43, 0.9);
+  --mb-shadow-focus: 0 0 0 1px rgba(53, 197, 255, 0.4), 0 0 24px -14px rgba(0, 125, 237, 0.86);
+  --mb-ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --mb-radius-none: 0;
+}

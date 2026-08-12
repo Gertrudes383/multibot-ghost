@@ -1,0 +1,133 @@
+@import "tailwindcss";
+@import "./styles/design-tokens.css";
+
+html {
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  touch-action: pan-x pan-y;
+}
+
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  touch-action: pan-x pan-y;
+}
+
+input,
+textarea,
+select,
+button {
+  touch-action: manipulation;
+}
+
+@supports (min-height: 100dvh) {
+  body,
+  #root {
+    min-height: 100dvh;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+@keyframes mb-sidebar-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mb-sidebar-enter {
+  opacity: 0;
+  animation: mb-sidebar-enter 280ms ease-out forwards;
+  animation-delay: var(--mb-sidebar-delay, 0ms);
+  will-change: opacity;
+}
+
+.mb-square-scrollbar {
+  scrollbar-color: rgba(64, 95, 128, 0.86) rgba(4, 12, 25, 0.72);
+  scrollbar-width: thin;
+}
+
+.mb-square-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.mb-square-scrollbar::-webkit-scrollbar-track {
+  background: rgba(4, 12, 25, 0.72);
+  border-radius: 0;
+}
+
+.mb-square-scrollbar::-webkit-scrollbar-thumb {
+  min-height: 48px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(64, 95, 128, 0.86);
+}
+
+.mb-square-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(91, 126, 160, 0.94);
+}
+
+.mb-square-scrollbar::-webkit-scrollbar-button {
+  appearance: none;
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+.mb-square-scrollbar::-webkit-scrollbar-corner {
+  background: rgba(4, 12, 25, 0.72);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mb-sidebar-enter {
+    opacity: 1;
+    animation: none;
+  }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: #e8f4ff !important;
+  caret-color: #e8f4ff;
+  border-color: #2a4a78 !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(4, 15, 35, 0.95) inset !important;
+  box-shadow: 0 0 0 1000px rgba(4, 15, 35, 0.95) inset !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+button:focus {
+  outline: none;
+}
+
+button:focus-visible {
+  outline: 1px solid rgba(53, 197, 255, 0.52);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px rgba(0, 125, 237, 0.2), 0 0 12px -6px rgba(53, 197, 255, 0.66);
+}
+
+button::-moz-focus-inner {
+  border: 0;
+}
