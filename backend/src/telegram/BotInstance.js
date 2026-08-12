@@ -143,6 +143,11 @@ class BotInstance {
   }
 
   _registerHandlers() {
+    // ─── Debug: log all incoming messages ───
+    this.bot.on('message', (msg) => {
+      console.log(`[BotInstance] ${this._name()} recebeu msg: "${msg.text}" de ${msg.from?.id} (${msg.from?.first_name})`);
+    });
+
     // ─── /start — Registro + boas-vindas ───
     this.bot.onText(/\/start(.*)/, (msg) => {
       this._safe(() => {
