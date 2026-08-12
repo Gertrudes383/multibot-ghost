@@ -16,7 +16,7 @@ const rechargeService = require('../../services/recharge.service');
 
 router.get('/bots', async (req, res) => {
   try {
-    const bots = await Bot.find({ owner_id: req.user.id }).lean();
+    const bots = await Bot.find({ owner_id: req.user.id, status: { $ne: 'deleted' } }).lean();
     const botManager = req.app.get('botManager');
 
     const result = bots.map((b) => ({
@@ -93,7 +93,7 @@ router.delete('/bots/:botId', async (req, res) => {
       try { await botManager.stopBot(String(bot._id)); } catch { /* ignore */ }
     }
 
-    await Bot.findByIdAndUpdate(bot._id, { status: 'deleted' });
+    await Bot.findByIdAndDelete(bot._id);
     res.json({ message: 'Bot removido' });
   } catch (err) {
     res.status(err.statusCode || 500).json({ message: err.message });
