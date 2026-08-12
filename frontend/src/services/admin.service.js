@@ -40,7 +40,9 @@ export const getTelegramRecharges = (params) => authApi.get('/admin/telegram/rec
 export const getTelegramBroadcast = (params) => authApi.get('/admin/telegram/broadcast', params);
 export const sendTelegramBroadcast = (data) => authApi.post('/admin/telegram/broadcast', data);
 export const getTelegramGiftCards = (params) => authApi.get('/admin/telegram/giftcards', params);
+export const createTelegramGiftCards = (data) => authApi.post('/admin/telegram/giftcards', data);
 export const getTelegramAffiliates = (params) => authApi.get('/admin/telegram/affiliates', params);
+export const updateAffiliateCommission = (data) => authApi.put('/admin/telegram/affiliates/commission', data);
 export const getTelegramExchanges = (params) => authApi.get('/admin/telegram/exchanges', params);
 export const getTelegramSettings = () => authApi.get('/admin/telegram/settings');
 export const updateTelegramSettings = (data) => authApi.put('/admin/telegram/settings', data);
@@ -170,3 +172,6 @@ export const getStartImage = (params) => authApi(`/admin/telegram/start-image-pr
 export const updateStartImage = (formData) => authApi('/admin/telegram/start-image', { method: 'POST', body: formData, headers: {} });
 export const createTelegramReference = (data) => authApi('/admin/telegram/references', { method: 'POST', body: JSON.stringify(data) });
 export const deleteTelegramReference = (id) => authApi(`/admin/telegram/references/${id}`, { method: 'DELETE' });
+
+export const getCpfViewSettings = () => authApi.get('/admin/settings/cpf-view');
+export const updateCpfViewSettings = (data) => authApi.put('/admin/settings/cpf-view', data);

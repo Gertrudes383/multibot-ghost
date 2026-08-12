@@ -74,6 +74,7 @@ const CustomEmojisPage = lazy(() => import('@pages/admin/CustomEmojisPage'));
 const StartImagePage = lazy(() => import('@pages/admin/StartImagePage'));
 const TelegramReferencesPage = lazy(() => import('@pages/admin/TelegramReferencesPage'));
 const GiftCardsBulkPage = lazy(() => import('@pages/admin/GiftCardsBulkPage'));
+const CpfViewPage = lazy(() => import('@pages/admin/CpfViewPage'));
 
 /* ── Assistant ── */
 const AssistantConsolePage = lazy(() => import('@pages/assistant/ConsolePage'));
@@ -171,6 +172,7 @@ export default function App() {
             <Route path="/admin/telegram/start-image" element={<StartImagePage />} />
             <Route path="/admin/telegram/references" element={<TelegramReferencesPage />} />
             <Route path="/admin/telegram/giftcards/bulk" element={<GiftCardsBulkPage />} />
+            <Route path="/admin/settings/cpf-view" element={<CpfViewPage />} />
           </Route>
         </Route>
 
