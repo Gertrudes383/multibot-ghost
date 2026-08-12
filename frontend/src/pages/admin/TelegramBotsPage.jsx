@@ -14,7 +14,7 @@ export default function TelegramBotsPage() {
   const qc = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
   const [editBot, setEditBot] = useState(null);
-  const [form, setForm] = useState({ name: '', token: '' });
+  const [form, setForm] = useState({ bot_name: '', bot_token: '' });
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'telegram', 'bots'],
@@ -23,7 +23,7 @@ export default function TelegramBotsPage() {
 
   const createMut = useMutation({
     mutationFn: createBot,
-    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'telegram', 'bots'] }); toast.success('Bot criado com sucesso'); setShowCreate(false); setForm({ name: '', token: '' }); },
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin', 'telegram', 'bots'] }); toast.success('Bot criado com sucesso'); setShowCreate(false); setForm({ bot_name: '', bot_token: '' }); },
     onError: (e) => toast.error(e?.data?.message || 'Erro ao criar bot'),
   });
 
@@ -46,16 +46,16 @@ export default function TelegramBotsPage() {
   });
 
   const columns = [
-    { key: 'name', label: 'Nome', render: (v) => <span className="flex items-center gap-2 font-medium text-[var(--mb-text-primary)]"><Bot className="w-4 h-4" />{v}</span> },
-    { key: 'token', label: 'Token', render: (v) => <span className="font-mono text-[12px]">{maskToken(v)}</span> },
+    { key: 'bot_name', label: 'Nome', render: (v, row) => <span className="flex items-center gap-2 font-medium text-[var(--mb-text-primary)]"><Bot className="w-4 h-4" />{v || row.store_name}</span> },
+    { key: 'bot_username', label: 'Username', render: (v) => <span className="font-mono text-[12px]">@{v}</span> },
     { key: 'status', label: 'Status', render: (v) => <StatusBadge status={v === 'active' ? 'active' : 'inactive'} label={v === 'active' ? 'Ativo' : 'Inativo'} /> },
-    { key: 'usersCount', label: 'Usuarios', render: (v) => formatNumber(v) },
+    { key: 'total_users', label: 'Usuarios', render: (v) => formatNumber(v || 0) },
     { key: 'createdAt', label: 'Criado em', render: (v) => formatDate(v) },
     {
       key: '_actions', label: 'Acoes', render: (_, row) => (
         <div className="flex gap-1">
-          <ActionButton variant="ghost" size="sm" onClick={() => toggleMut.mutate({ id: row._id, data: { active: row.status !== 'active' } })}><Power className="w-3.5 h-3.5" /></ActionButton>
-          <ActionButton variant="ghost" size="sm" onClick={() => { setEditBot(row); setForm({ name: row.name, token: row.token }); }}><Edit className="w-3.5 h-3.5" /></ActionButton>
+          <ActionButton variant="ghost" size="sm" onClick={() => toggleMut.mutate({ id: row._id, data: { status: row.status !== 'active' ? 'active' : 'inactive' } })}><Power className="w-3.5 h-3.5" /></ActionButton>
+          <ActionButton variant="ghost" size="sm" onClick={() => { setEditBot(row); setForm({ bot_name: row.bot_name || row.store_name || '', bot_token: '' }); }}><Edit className="w-3.5 h-3.5" /></ActionButton>
           <ActionButton variant="danger" size="sm" onClick={() => { if (confirm('Remover bot?')) deleteMut.mutate(row._id); }}><Trash2 className="w-3.5 h-3.5" /></ActionButton>
         </div>
       ),
@@ -68,24 +68,24 @@ export default function TelegramBotsPage() {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold text-[var(--mb-text-primary)]">Bots do Telegram</h1>
-        <ActionButton onClick={() => { setShowCreate(true); setForm({ name: '', token: '' }); }}><Plus className="w-4 h-4 mr-1" />Novo Bot</ActionButton>
+        <ActionButton onClick={() => { setShowCreate(true); setForm({ bot_name: '', bot_token: '' }); }}><Plus className="w-4 h-4 mr-1" />Novo Bot</ActionButton>
       </div>
 
       <DataTable columns={columns} data={bots} isLoading={isLoading} emptyTitle="Nenhum bot cadastrado" emptyDescription="Crie um bot para comecar" />
 
       <Modal open={showCreate} onClose={() => setShowCreate(false)} title="Novo Bot">
         <div className="space-y-4">
-          <InputField label="Nome" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} placeholder="Nome do bot" />
-          <InputField label="Token do BotFather" value={form.token} onChange={(e) => setForm((p) => ({ ...p, token: e.target.value }))} placeholder="123456:ABC-DEF..." />
+          <InputField label="Nome da Loja" value={form.bot_name} onChange={(e) => setForm((p) => ({ ...p, bot_name: e.target.value }))} placeholder="Nome do bot" />
+          <InputField label="Token do BotFather" value={form.bot_token} onChange={(e) => setForm((p) => ({ ...p, bot_token: e.target.value }))} placeholder="123456:ABC-DEF..." />
           <ActionButton variant="accent" className="w-full" loading={createMut.isPending} onClick={() => createMut.mutate(form)}>Criar Bot</ActionButton>
         </div>
       </Modal>
 
       <Modal open={!!editBot} onClose={() => setEditBot(null)} title="Editar Bot">
         <div className="space-y-4">
-          <InputField label="Nome" value={form.name} onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))} />
-          <InputField label="Token" value={form.token} onChange={(e) => setForm((p) => ({ ...p, token: e.target.value }))} />
-          <ActionButton variant="accent" className="w-full" loading={updateMut.isPending} onClick={() => updateMut.mutate({ id: editBot._id, data: form })}>Salvar</ActionButton>
+          <InputField label="Nome da Loja" value={form.bot_name} onChange={(e) => setForm((p) => ({ ...p, bot_name: e.target.value }))} />
+          <InputField label="Token (deixe vazio para manter)" value={form.bot_token} onChange={(e) => setForm((p) => ({ ...p, bot_token: e.target.value }))} placeholder="Somente se quiser trocar" />
+          <ActionButton variant="accent" className="w-full" loading={updateMut.isPending} onClick={() => updateMut.mutate({ id: editBot._id, data: { bot_name: form.bot_name, store_name: form.bot_name } })}>Salvar</ActionButton>
         </div>
       </Modal>
     </div>

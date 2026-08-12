@@ -57,4 +57,7 @@ router.use('/referral', require('./referral.routes'));
 /** APIs Externas */
 router.use('/external-api', require('./external-api.routes'));
 
+/** Sistema — status, uptime, uploads, logs de validação */
+router.use('/system', require('./system.routes'));
+
 module.exports = router;

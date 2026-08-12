@@ -1,7 +1,8 @@
 'use strict';
 
 const router = require('express').Router();
-const { Bot } = require('../../../database/schemas');
+const mongoose = require('mongoose');
+const { Bot, Setting, Notification } = require('../../../database/schemas');
 const { sanitize } = require('../../utils/htmlSanitizer');
 const { sanitizeInputs } = require('../../middleware/sanitize');
 
@@ -112,25 +113,98 @@ router.put('/rules', sanitizeInputs, async (req, res) => {
 // ─── CPF ───
 
 router.get('/cpf', async (req, res) => {
-  res.json({ cpfRequired: false, cpfValidation: 'none' });
+  try {
+    const ownerId = req.user.id;
+    const botId = req.query.botId || null;
+
+    const [cpfRequired, cpfValidation, cpfVisible] = await Promise.all([
+      Setting.getValue('cpf_required', ownerId, botId),
+      Setting.getValue('cpf_validation', ownerId, botId),
+      Setting.getValue('cpf_visible', ownerId, botId),
+    ]);
+
+    res.json({
+      cpfRequired: cpfRequired ?? false,
+      cpfValidation: cpfValidation ?? 'none',
+      cpfVisible: cpfVisible ?? false,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 router.put('/cpf', sanitizeInputs, async (req, res) => {
-  res.json({ message: 'Configurações CPF atualizadas' });
+  try {
+    const ownerId = req.user.id;
+    const botId = req.body.botId || null;
+
+    const updates = [];
+    if (req.body.cpfRequired !== undefined) {
+      updates.push(Setting.setValue('cpf_required', req.body.cpfRequired, ownerId, botId));
+    }
+    if (req.body.cpfValidation !== undefined) {
+      updates.push(Setting.setValue('cpf_validation', req.body.cpfValidation, ownerId, botId));
+    }
+    if (req.body.cpfVisible !== undefined) {
+      updates.push(Setting.setValue('cpf_visible', req.body.cpfVisible, ownerId, botId));
+    }
+    await Promise.all(updates);
+
+    res.json({ message: 'Configurações CPF atualizadas' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 // ─── SECURITY ───
 
 router.get('/security', async (req, res) => {
-  res.json({
-    twoFactorEnabled: false,
-    sessionTimeout: 3600,
-    maxLoginAttempts: 5,
-  });
+  try {
+    const ownerId = req.user.id;
+    const botId = req.query.botId || null;
+
+    const [twoFactorEnabled, sessionTimeout, maxLoginAttempts, ipWhitelist] = await Promise.all([
+      Setting.getValue('security_2fa_enabled', ownerId, botId),
+      Setting.getValue('security_session_timeout', ownerId, botId),
+      Setting.getValue('security_max_login_attempts', ownerId, botId),
+      Setting.getValue('security_ip_whitelist', ownerId, botId),
+    ]);
+
+    res.json({
+      twoFactorEnabled: twoFactorEnabled ?? false,
+      sessionTimeout: sessionTimeout ?? 3600,
+      maxLoginAttempts: maxLoginAttempts ?? 5,
+      ipWhitelist: ipWhitelist ?? [],
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 router.put('/security', sanitizeInputs, async (req, res) => {
-  res.json({ message: 'Configurações de segurança atualizadas' });
+  try {
+    const ownerId = req.user.id;
+    const botId = req.body.botId || null;
+
+    const updates = [];
+    if (req.body.twoFactorEnabled !== undefined) {
+      updates.push(Setting.setValue('security_2fa_enabled', req.body.twoFactorEnabled, ownerId, botId));
+    }
+    if (req.body.sessionTimeout !== undefined) {
+      updates.push(Setting.setValue('security_session_timeout', parseInt(req.body.sessionTimeout, 10), ownerId, botId));
+    }
+    if (req.body.maxLoginAttempts !== undefined) {
+      updates.push(Setting.setValue('security_max_login_attempts', parseInt(req.body.maxLoginAttempts, 10), ownerId, botId));
+    }
+    if (req.body.ipWhitelist !== undefined) {
+      updates.push(Setting.setValue('security_ip_whitelist', req.body.ipWhitelist, ownerId, botId));
+    }
+    await Promise.all(updates);
+
+    res.json({ message: 'Configurações de segurança atualizadas' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 // ─── SUPPORT ───
@@ -161,11 +235,72 @@ router.put('/support', sanitizeInputs, async (req, res) => {
 // ─── NOTIFICATIONS ───
 
 router.get('/notifications', async (req, res) => {
-  res.json({ emailNotifications: false, telegramNotifications: true });
+  try {
+    const ownerId = req.user.id;
+    const botId = req.query.botId || null;
+
+    const [emailNotifications, telegramNotifications, unreadCount] = await Promise.all([
+      Setting.getValue('notifications_email_enabled', ownerId, botId),
+      Setting.getValue('notifications_telegram_enabled', ownerId, botId),
+      Notification.find({ owner_id: ownerId, read: false }).countDocuments(),
+    ]);
+
+    res.json({
+      emailNotifications: emailNotifications ?? false,
+      telegramNotifications: telegramNotifications ?? true,
+      unreadCount,
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 router.put('/notifications', sanitizeInputs, async (req, res) => {
-  res.json({ message: 'Configurações de notificações atualizadas' });
+  try {
+    const ownerId = req.user.id;
+    const botId = req.body.botId || null;
+
+    const updates = [];
+    if (req.body.emailNotifications !== undefined) {
+      updates.push(Setting.setValue('notifications_email_enabled', req.body.emailNotifications, ownerId, botId));
+    }
+    if (req.body.telegramNotifications !== undefined) {
+      updates.push(Setting.setValue('notifications_telegram_enabled', req.body.telegramNotifications, ownerId, botId));
+    }
+    await Promise.all(updates);
+
+    res.json({ message: 'Configurações de notificações atualizadas' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ─── KEY-VALUE ───
+
+router.post('/key-value', sanitizeInputs, async (req, res) => {
+  try {
+    const { key, value, botId } = req.body;
+    if (!key) return res.status(400).json({ message: 'key é obrigatório' });
+
+    const ownerId = req.user.id;
+    const setting = await Setting.setValue(key, value, ownerId, botId || null);
+    res.json({ setting });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+router.get('/key-value/:key', async (req, res) => {
+  try {
+    const ownerId = req.user.id;
+    const botId = req.query.botId || null;
+    const { key } = req.params;
+
+    const value = await Setting.getValue(key, ownerId, botId);
+    res.json({ key, value });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

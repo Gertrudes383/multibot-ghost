@@ -14,7 +14,7 @@ class BroadcastService {
     this._botManager = botManager;
   }
 
-  async createBroadcast(botId, message, filters = {}) {
+  async createBroadcast(botId, message, filters = {}, imageUrl = null) {
     if (!message || !message.trim()) {
       const err = new Error('Mensagem de broadcast não pode ser vazia');
       err.statusCode = 400;
@@ -63,6 +63,7 @@ class BroadcastService {
       startedAt: new Date(),
       completedAt: null,
       message,
+      imageUrl,
     };
 
     this._active.set(broadcastId, state);
@@ -74,7 +75,11 @@ class BroadcastService {
 
         limiter.enqueue(async () => {
           try {
-            await instance.bot.sendMessage(u.telegram_id, message, { parse_mode: parseMode });
+            if (imageUrl) {
+              await instance.bot.sendPhoto(u.telegram_id, imageUrl, { caption: message, parse_mode: parseMode });
+            } else {
+              await instance.bot.sendMessage(u.telegram_id, message, { parse_mode: parseMode });
+            }
             state.delivered++;
           } catch (err) {
             if (err.response?.statusCode === 403) {

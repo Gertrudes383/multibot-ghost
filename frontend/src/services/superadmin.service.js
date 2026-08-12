@@ -35,3 +35,7 @@ export function superadminSearch(query) {
 export function createSuperadminUser(data) {
   return authApi.post('/superadmin/users', data);
 }
+
+export const searchGlobal = (params) => authApi(`/superadmin/search?${new URLSearchParams(params)}`);
+export const createSupportUser = (data) => authApi('/superadmin/create-support-user', { method: 'POST', body: JSON.stringify(data) });
+export const changeSuperadminPassword = (data) => authApi('/superadmin/me/password', { method: 'PUT', body: JSON.stringify(data) });

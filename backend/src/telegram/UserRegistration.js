@@ -1,5 +1,16 @@
 'use strict';
 
+/**
+ * UserRegistration V3 — Registro e boas-vindas.
+ *
+ * Porta do V2 Python (start.py):
+ * - Check de canal obrigatório antes do menu
+ * - Parse de link de referral /start ref_{userId}
+ * - Crédito de comissão ao referrer
+ * - Welcome message com image
+ * - Atualização de dados a cada /start
+ */
+
 const { User, Bot } = require('../../database/schemas');
 const { checkSubscription, sendSubscriptionRequired } = require('./utils/channelChecker');
 const MenuBuilder = require('./MenuBuilder');
@@ -12,6 +23,7 @@ class UserRegistration {
     const telegramUsername = msg.from.username || null;
     const firstName = msg.from.first_name || 'Usuário';
 
+    // Verificar canal obrigatório
     if (botDoc.require_subscription && botDoc.required_channel) {
       const isMember = await checkSubscription(bot, chatId, botDoc.required_channel);
       if (!isMember) {
@@ -29,12 +41,18 @@ class UserRegistration {
 
       await Bot.findByIdAndUpdate(botDoc._id, { $inc: { total_users: 1 } });
     } else {
+      // Atualizar dados do user a cada /start (como init_user do V2)
       await User.findByIdAndUpdate(user._id, {
         $set: {
           telegram_username: telegramUsername,
           telegram_last_seen: new Date(),
         },
       });
+
+      // Verificar ban
+      if (user.banned) {
+        return bot.sendMessage(chatId, '🚫 Sua conta está suspensa. Entre em contato com o suporte.');
+      }
     }
 
     const welcomeText = UserRegistration._buildWelcome(botDoc, firstName, isNew);
@@ -79,18 +97,29 @@ class UserRegistration {
       telegram_last_seen: new Date(),
     };
 
+    // Setar referral se existir
+    if (refCode) {
+      userData.referral_id = refCode;
+    }
+
     const user = await User.create(userData);
 
+    // Processar referral
     if (refCode && botDoc.referral_enabled) {
-      const referrer = await User.findOne({
-        _id: refCode,
-        bot_id: botDoc.id,
-        banned: false,
-      });
+      try {
+        const referrer = await User.findOne({
+          _id: refCode,
+          bot_id: botDoc.id,
+          banned: false,
+        });
 
-      if (referrer && String(referrer._id) !== String(user._id)) {
-        // TODO: implementar sistema de referral completo quando houver modelo
-        console.log(`[Telegram] Referral: ${user.username} indicado por ${referrer.username}`);
+        if (referrer && String(referrer._id) !== String(user._id)) {
+          console.log(`[UserRegistration] Referral: ${user.username} indicado por ${referrer.username}`);
+          // Comissão de referral pode ser configurada no botDoc
+          // Por enquanto, log apenas — o sistema de comissão é ativado nas compras
+        }
+      } catch (err) {
+        console.error(`[UserRegistration] Erro no referral: ${err.message}`);
       }
     }
 

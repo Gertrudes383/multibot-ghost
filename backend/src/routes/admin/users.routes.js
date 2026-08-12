@@ -178,4 +178,98 @@ router.get('/:userId/purchases', async (req, res) => {
   }
 });
 
+// ─── ACTIVITIES ───
+
+router.get('/activities', async (req, res) => {
+  try {
+    const { page = 1, limit = 50, type, userId, startDate, endDate, botId } = req.query;
+    const lim = Math.min(100, parseInt(limit, 10));
+    const skip = (Math.max(1, parseInt(page, 10)) - 1) * lim;
+
+    const query = { owner_id: req.user.id };
+    if (type) query.type = type;
+    if (userId) query.user_id = userId;
+    if (botId) query.bot_id = botId;
+    if (startDate || endDate) {
+      query.createdAt = {};
+      if (startDate) query.createdAt.$gte = new Date(startDate);
+      if (endDate) query.createdAt.$lte = new Date(endDate);
+    }
+
+    const [activities, total] = await Promise.all([
+      Activity.find(query).sort({ createdAt: -1 }).skip(skip).limit(lim).lean(),
+      Activity.countDocuments(query),
+    ]);
+
+    res.json({ activities, total, page: parseInt(page, 10), totalPages: Math.ceil(total / lim) });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ─── TOP USERS ───
+
+router.get('/top', async (req, res) => {
+  try {
+    const { sortBy = 'purchaseCount', botId } = req.query;
+    const ownerId = new mongoose.Types.ObjectId(req.user.id);
+
+    const matchStage = { owner_id: ownerId };
+    if (botId) matchStage.bot_id = new mongoose.Types.ObjectId(botId);
+
+    let sortField;
+    if (sortBy === 'balance') {
+      // Sort by balance field on User documents directly
+      const query = { owner_id: req.user.id };
+      if (botId) query.bot_id = botId;
+
+      const users = await User.find(query)
+        .select('-password')
+        .sort({ balance: -1 })
+        .limit(20)
+        .lean();
+
+      return res.json({ users, sortBy });
+    }
+
+    // Default: sort by purchase count via Order aggregation
+    const topByPurchases = await Order.aggregate([
+      { $match: { owner_id: ownerId, status: 'completed' } },
+      {
+        $group: {
+          _id: '$user_id',
+          purchaseCount: { $sum: 1 },
+          totalSpent: { $sum: '$price' },
+        },
+      },
+      { $sort: { purchaseCount: -1 } },
+      { $limit: 20 },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'user',
+        },
+      },
+      { $unwind: { path: '$user', preserveNullAndEmpty: false } },
+      {
+        $project: {
+          _id: 0,
+          userId: '$_id',
+          purchaseCount: 1,
+          totalSpent: 1,
+          username: '$user.username',
+          telegram_username: '$user.telegram_username',
+          telegram_id: '$user.telegram_id',
+        },
+      },
+    ]);
+
+    res.json({ users: topByPurchases, sortBy });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 module.exports = router;

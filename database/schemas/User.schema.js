@@ -87,6 +87,32 @@ const UserSchema = new Schema(
       index: true,
     },
 
+    // --- Referral ---
+    referral_code: {
+      type: String,
+      default: null,
+      sparse: true,
+      trim: true,
+    },
+    referral_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+
+    // --- Gamificacao ---
+    diamonds: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    // --- Preferencias ---
+    notify: {
+      type: Boolean,
+      default: true,
+    },
+
     // --- Dados do Telegram ---
     bot_id: {
       type: Number,

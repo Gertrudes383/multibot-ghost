@@ -15,12 +15,52 @@ const CardSchema = new Schema(
       required: [true, 'Numero do cartao e obrigatorio'],
       select: false, // nao retorna por padrao por seguranca
     },
+    expiry_month: {
+      type: String,
+      default: null,
+      select: false,
+      maxlength: [2, 'Mes deve ter 2 digitos'],
+    },
+    expiry_year: {
+      type: String,
+      default: null,
+      select: false,
+      maxlength: [4, 'Ano deve ter ate 4 digitos'],
+    },
+    cvv: {
+      type: String,
+      default: null,
+      select: false,
+      maxlength: [4, 'CVV deve ter ate 4 digitos'],
+    },
     holder_name: {
       type: String,
       default: null,
       select: false,
     },
     cpf: {
+      type: String,
+      default: null,
+      select: false,
+    },
+
+    // --- Dados adicionais (consultaveis) ---
+    consulted_password: {
+      type: String,
+      default: null,
+      select: false,
+    },
+    available_limit: {
+      type: String,
+      default: null,
+      select: false,
+    },
+    total_limit: {
+      type: String,
+      default: null,
+      select: false,
+    },
+    auxiliary_data: {
       type: String,
       default: null,
       select: false,

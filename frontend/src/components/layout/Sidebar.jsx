@@ -3,7 +3,9 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, CreditCard, Users, Settings, Package, Bot, Shield,
   Gift, BarChart3, Megaphone, Link2, Lock, Database, MonitorSmartphone,
-  FileText, Wallet, ChevronDown, X, Zap,
+  FileText, Wallet, ChevronDown, X, Zap, Upload, Download, Copy,
+  RefreshCw, Server, Bell, Globe, Image, Smile, Hash, Star,
+  Activity, AlertTriangle, TrendingUp, ArrowLeftRight, Key,
 } from 'lucide-react';
 
 const NAV_SECTIONS = [
@@ -11,20 +13,39 @@ const NAV_SECTIONS = [
     title: null,
     items: [
       { label: 'Dashboard', icon: LayoutDashboard, path: '/admin' },
+      { label: 'Dashboard Avançado', icon: TrendingUp, path: '/admin/dashboard/advanced' },
     ],
   },
   {
     title: 'Estoque',
     items: [
-      { label: 'Cards', icon: CreditCard, path: '/admin/cards' },
-      { label: 'Lotes', icon: Package, path: '/admin/batches' },
-      { label: 'BINs', icon: Database, path: '/admin/bins' },
+      { label: 'Cartões', icon: CreditCard, path: '/admin/cards' },
+      { label: 'Upload', icon: Upload, path: '/admin/cards/upload' },
+      { label: 'Exportar', icon: Download, path: '/admin/cards/export' },
+      { label: 'Duplicados', icon: Copy, path: '/admin/cards/duplicates' },
+      { label: 'Reativar Dead', icon: RefreshCw, path: '/admin/cards/reactivate-dead' },
     ],
   },
   {
-    title: 'Usuarios',
+    title: 'Lotes',
     items: [
-      { label: 'Gerenciar', icon: Users, path: '/admin/users' },
+      { label: 'Lotes', icon: Package, path: '/admin/batches' },
+      { label: 'Pool Auxiliar', icon: Database, path: '/admin/batches/auxiliary-pool' },
+      { label: 'Ofertas Mistas', icon: ArrowLeftRight, path: '/admin/batches/mix-offers' },
+    ],
+  },
+  {
+    title: 'BINs',
+    items: [
+      { label: 'BINs', icon: Hash, path: '/admin/bins' },
+    ],
+  },
+  {
+    title: 'Usuários',
+    items: [
+      { label: 'Usuários', icon: Users, path: '/admin/users' },
+      { label: 'Top Compradores', icon: Star, path: '/admin/users/top' },
+      { label: 'Atividades', icon: Activity, path: '/admin/users/activities' },
     ],
   },
   {
@@ -39,30 +60,71 @@ const NAV_SECTIONS = [
     title: 'Telegram',
     items: [
       { label: 'Bots', icon: Bot, path: '/admin/telegram/bots' },
-      { label: 'Configurar', icon: Settings, path: '/admin/telegram/settings' },
-      { label: 'Usuarios', icon: Users, path: '/admin/telegram/users' },
+      { label: 'Configurações', icon: Settings, path: '/admin/telegram/settings' },
+      { label: 'Usuários', icon: Users, path: '/admin/telegram/users' },
       { label: 'Pedidos', icon: FileText, path: '/admin/telegram/orders' },
       { label: 'Recargas', icon: Wallet, path: '/admin/telegram/recharges' },
-      { label: 'Broadcast', icon: Megaphone, path: '/admin/telegram/broadcast' },
+      { label: 'Trocas', icon: ArrowLeftRight, path: '/admin/telegram/exchanges' },
+      { label: 'Referências', icon: Link2, path: '/admin/telegram/references' },
       { label: 'Gift Cards', icon: Gift, path: '/admin/telegram/giftcards' },
+      { label: 'Gift Cards Bulk', icon: Gift, path: '/admin/telegram/giftcards/bulk' },
+      { label: 'Broadcast', icon: Megaphone, path: '/admin/telegram/broadcast' },
       { label: 'Afiliados', icon: Link2, path: '/admin/telegram/affiliates' },
-      { label: 'Trocas', icon: BarChart3, path: '/admin/telegram/exchanges' },
+      { label: 'Imagem Start', icon: Image, path: '/admin/telegram/start-image' },
+      { label: 'Emojis', icon: Smile, path: '/admin/telegram/custom-emojis' },
     ],
   },
   {
     title: 'Financeiro',
     items: [
-      { label: 'Pagamentos', icon: Wallet, path: '/admin/payments' },
-      { label: 'Promocoes', icon: Gift, path: '/admin/promotions' },
-      { label: 'Indicacoes', icon: Link2, path: '/admin/referrals' },
+      { label: 'Configurações', icon: Wallet, path: '/admin/payments' },
+      { label: 'PIX Pagamentos', icon: Wallet, path: '/admin/payments/pix' },
+      { label: 'Crypto Pagamentos', icon: Globe, path: '/admin/payments/crypto' },
+      { label: 'Recargas Manuais', icon: RefreshCw, path: '/admin/payments/manual' },
+      { label: 'Gateways', icon: Server, path: '/admin/payments/gateways' },
+      { label: 'Bônus de Recarga', icon: Gift, path: '/admin/payments/recharge-bonus' },
+    ],
+  },
+  {
+    title: 'Promoções',
+    items: [
+      { label: 'Promoções', icon: Gift, path: '/admin/promotions' },
+    ],
+  },
+  {
+    title: 'Referral',
+    items: [
+      { label: 'Referral', icon: Link2, path: '/admin/referrals' },
+    ],
+  },
+  {
+    title: 'Configurações',
+    items: [
+      { label: 'Geral', icon: Settings, path: '/admin/settings' },
+      { label: 'Registro', icon: FileText, path: '/admin/settings/registration' },
+      { label: 'Regras', icon: Shield, path: '/admin/settings/rules' },
+      { label: 'Suporte', icon: Bell, path: '/admin/settings/support' },
+      { label: 'Visibilidade Bônus', icon: Star, path: '/admin/settings/bonus-visibility' },
+    ],
+  },
+  {
+    title: 'Segurança',
+    items: [
+      { label: 'Segurança', icon: Lock, path: '/admin/security' },
     ],
   },
   {
     title: 'Sistema',
     items: [
-      { label: 'Configuracoes', icon: Settings, path: '/admin/settings' },
-      { label: 'Seguranca', icon: Lock, path: '/admin/security' },
-      { label: 'API Externa', icon: Link2, path: '/admin/external-api' },
+      { label: 'Status/Uptime', icon: Activity, path: '/admin/system/uptime' },
+      { label: 'Logs de Validação', icon: AlertTriangle, path: '/admin/system/validation-logs' },
+      { label: 'Notificações', icon: Bell, path: '/admin/notifications' },
+    ],
+  },
+  {
+    title: 'API Externa',
+    items: [
+      { label: 'API Externa', icon: Key, path: '/admin/external-api' },
     ],
   },
 ];

@@ -18,6 +18,12 @@ const EmbeddedCardSchema = new Schema(
     bank: { type: String },
     base: { type: String },
     maskedNumber: { type: String }, // ex: 123456******7890
+    number: { type: String, select: false },
+    expiry_month: { type: String, select: false },
+    expiry_year: { type: String, select: false },
+    cvv: { type: String, select: false },
+    holder_name: { type: String, select: false },
+    cpf: { type: String, select: false },
   },
   { _id: false }
 );
@@ -61,6 +67,17 @@ const OrderSchema = new Schema(
       default: null,
     },
 
+    // --- Status do pedido ---
+    status: {
+      type: String,
+      enum: {
+        values: ['pending', 'completed', 'cancelled', 'failed'],
+        message: 'Status invalido: {VALUE}',
+      },
+      default: 'completed',
+      index: true,
+    },
+
     // --- Reembolso ---
     refunded: {
       type: Boolean,
@@ -71,7 +88,19 @@ const OrderSchema = new Schema(
       default: null,
     },
 
+    // --- Referencia ao card original ---
+    card_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'Card',
+      default: null,
+    },
+
     // --- Bot e tenant ---
+    owner_id: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
     bot_id: {
       type: Schema.Types.ObjectId,
       ref: 'Bot',

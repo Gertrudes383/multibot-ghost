@@ -19,6 +19,12 @@ const Activity = require('./Activity.schema');
 const Subscription = require('./Subscription.schema');
 const ExternalSupplier = require('./ExternalSupplier.schema');
 const IpBlock = require('./IpBlock.schema');
+const Exchange = require('./Exchange.schema');
+const Referral = require('./Referral.schema');
+const Setting = require('./Setting.schema');
+const SubscriptionPlan = require('./SubscriptionPlan.schema');
+const CheckerSession = require('./CheckerSession.schema');
+const Notification = require('./Notification.schema');
 
 module.exports = {
   User,
@@ -37,4 +43,10 @@ module.exports = {
   Subscription,
   ExternalSupplier,
   IpBlock,
+  Exchange,
+  Referral,
+  Setting,
+  SubscriptionPlan,
+  CheckerSession,
+  Notification,
 };

@@ -23,7 +23,7 @@ class BotManager {
         started++;
       } catch (err) {
         failed++;
-        console.error(`[BotManager] Falha ao iniciar bot ${botDoc.bot_name}: ${err.message}`);
+        console.error(`[BotManager] Falha ao iniciar bot ${botDoc.name || botDoc.store_name}: ${err.message}`);
       }
     }
 
@@ -88,7 +88,7 @@ class BotManager {
     return {
       status: instance.status,
       uptime: instance.uptime,
-      botName: instance.botDoc.bot_name,
+      botName: instance.botDoc.name || instance.botDoc.store_name,
       lastHeartbeat: instance.botDoc.last_heartbeat,
     };
   }

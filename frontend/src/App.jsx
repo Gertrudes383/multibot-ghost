@@ -49,6 +49,31 @@ const AdminReferralPage = lazy(() => import('@pages/admin/ReferralPage'));
 const SettingsPage = lazy(() => import('@pages/admin/SettingsPage'));
 const SecurityPage = lazy(() => import('@pages/admin/SecurityPage'));
 const ExternalApiPage = lazy(() => import('@pages/admin/ExternalApiPage'));
+const CardUploadPage = lazy(() => import('@pages/admin/CardUploadPage'));
+const CardExportPage = lazy(() => import('@pages/admin/CardExportPage'));
+const CardDuplicatesPage = lazy(() => import('@pages/admin/CardDuplicatesPage'));
+const ReactivateDeadPage = lazy(() => import('@pages/admin/ReactivateDeadPage'));
+const AuxiliaryPoolPage = lazy(() => import('@pages/admin/AuxiliaryPoolPage'));
+const MixOffersPage = lazy(() => import('@pages/admin/MixOffersPage'));
+const DashboardAdvancedPage = lazy(() => import('@pages/admin/DashboardAdvancedPage'));
+const PixPaymentsPage = lazy(() => import('@pages/admin/PixPaymentsPage'));
+const CryptoPaymentsPage = lazy(() => import('@pages/admin/CryptoPaymentsPage'));
+const ManualRechargePage = lazy(() => import('@pages/admin/ManualRechargePage'));
+const GatewaysPage = lazy(() => import('@pages/admin/GatewaysPage'));
+const RechargeBonusPage = lazy(() => import('@pages/admin/RechargeBonusPage'));
+const TopUsersPage = lazy(() => import('@pages/admin/TopUsersPage'));
+const UserActivitiesPage = lazy(() => import('@pages/admin/UserActivitiesPage'));
+const NotificationsPage = lazy(() => import('@pages/admin/NotificationsPage'));
+const SystemUptimePage = lazy(() => import('@pages/admin/SystemUptimePage'));
+const RegistrationSettingsPage = lazy(() => import('@pages/admin/RegistrationSettingsPage'));
+const RulesSettingsPage = lazy(() => import('@pages/admin/RulesSettingsPage'));
+const SupportContactsPage = lazy(() => import('@pages/admin/SupportContactsPage'));
+const BonusVisibilityPage = lazy(() => import('@pages/admin/BonusVisibilityPage'));
+const PurchaseValidationLogsPage = lazy(() => import('@pages/admin/PurchaseValidationLogsPage'));
+const CustomEmojisPage = lazy(() => import('@pages/admin/CustomEmojisPage'));
+const StartImagePage = lazy(() => import('@pages/admin/StartImagePage'));
+const TelegramReferencesPage = lazy(() => import('@pages/admin/TelegramReferencesPage'));
+const GiftCardsBulkPage = lazy(() => import('@pages/admin/GiftCardsBulkPage'));
 
 /* ── Assistant ── */
 const AssistantConsolePage = lazy(() => import('@pages/assistant/ConsolePage'));
@@ -58,6 +83,9 @@ const AssistantGiftCardsPage = lazy(() => import('@pages/assistant/GiftCardsPage
 const SuperAdminLoginPage = lazy(() => import('@pages/superadmin/LoginPage'));
 const SuperAdminDashboard = lazy(() => import('@pages/superadmin/DashboardPage'));
 const SuperAdminTenantsPage = lazy(() => import('@pages/superadmin/TenantsPage'));
+const SuperAdminPaymentsPage = lazy(() => import('@pages/superadmin/PaymentsPage'));
+const SuperAdminStatsPage = lazy(() => import('@pages/superadmin/StatsPage'));
+const SuperAdminSearchPage = lazy(() => import('@pages/superadmin/SearchPage'));
 
 function PageLoader() {
   return (
@@ -118,6 +146,31 @@ export default function App() {
             <Route path="/admin/settings" element={<SettingsPage />} />
             <Route path="/admin/security" element={<SecurityPage />} />
             <Route path="/admin/external-api" element={<ExternalApiPage />} />
+            <Route path="/admin/cards/upload" element={<CardUploadPage />} />
+            <Route path="/admin/cards/export" element={<CardExportPage />} />
+            <Route path="/admin/cards/duplicates" element={<CardDuplicatesPage />} />
+            <Route path="/admin/cards/reactivate-dead" element={<ReactivateDeadPage />} />
+            <Route path="/admin/batches/auxiliary-pool" element={<AuxiliaryPoolPage />} />
+            <Route path="/admin/batches/mix-offers" element={<MixOffersPage />} />
+            <Route path="/admin/dashboard/advanced" element={<DashboardAdvancedPage />} />
+            <Route path="/admin/payments/pix" element={<PixPaymentsPage />} />
+            <Route path="/admin/payments/crypto" element={<CryptoPaymentsPage />} />
+            <Route path="/admin/payments/manual" element={<ManualRechargePage />} />
+            <Route path="/admin/payments/gateways" element={<GatewaysPage />} />
+            <Route path="/admin/payments/recharge-bonus" element={<RechargeBonusPage />} />
+            <Route path="/admin/users/top" element={<TopUsersPage />} />
+            <Route path="/admin/users/activities" element={<UserActivitiesPage />} />
+            <Route path="/admin/notifications" element={<NotificationsPage />} />
+            <Route path="/admin/system/uptime" element={<SystemUptimePage />} />
+            <Route path="/admin/settings/registration" element={<RegistrationSettingsPage />} />
+            <Route path="/admin/settings/rules" element={<RulesSettingsPage />} />
+            <Route path="/admin/settings/support" element={<SupportContactsPage />} />
+            <Route path="/admin/settings/bonus-visibility" element={<BonusVisibilityPage />} />
+            <Route path="/admin/system/validation-logs" element={<PurchaseValidationLogsPage />} />
+            <Route path="/admin/telegram/custom-emojis" element={<CustomEmojisPage />} />
+            <Route path="/admin/telegram/start-image" element={<StartImagePage />} />
+            <Route path="/admin/telegram/references" element={<TelegramReferencesPage />} />
+            <Route path="/admin/telegram/giftcards/bulk" element={<GiftCardsBulkPage />} />
           </Route>
         </Route>
 
@@ -135,6 +188,9 @@ export default function App() {
           <Route element={<AppShell />}>
             <Route path="/superadmin" element={<SuperAdminDashboard />} />
             <Route path="/superadmin/tenants" element={<SuperAdminTenantsPage />} />
+            <Route path="/superadmin/payments" element={<SuperAdminPaymentsPage />} />
+            <Route path="/superadmin/stats" element={<SuperAdminStatsPage />} />
+            <Route path="/superadmin/search" element={<SuperAdminSearchPage />} />
           </Route>
         </Route>
 

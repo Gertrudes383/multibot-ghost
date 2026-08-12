@@ -50,11 +50,12 @@ class PurchaseService {
     session.startTransaction();
 
     try {
-      const cardFilter = { status: 'available', owner_id: new mongoose.Types.ObjectId(botId ? undefined : userId) };
-      if (botId) {
-        cardFilter.bot_id = new mongoose.Types.ObjectId(botId);
-        delete cardFilter.owner_id;
-      }
+      // Buscar o bot para obter o owner_id (stock compartilhado dentro do owner)
+      const { Bot } = require('../../database/schemas');
+      const botDoc = botId ? await Bot.findById(botId).lean() : null;
+      const ownerId = botDoc ? botDoc.owner_id : userId;
+
+      const cardFilter = { status: 'available', owner_id: new mongoose.Types.ObjectId(ownerId) };
       if (bin) cardFilter.bin = bin;
       if (country) cardFilter.country = country.toUpperCase();
       if (base) cardFilter.base = base;
@@ -121,7 +122,7 @@ class PurchaseService {
       );
 
       const cardWithSensitive = await Card.findById(card._id)
-        .select('+number +holder_name +cpf +track1 +track2')
+        .select('+number +expiry_month +expiry_year +cvv +holder_name +cpf +track1 +track2')
         .session(session)
         .lean();
 
@@ -129,6 +130,8 @@ class PurchaseService {
         [
           {
             userId: new mongoose.Types.ObjectId(userId),
+            username: user.username || user.telegram_username || `tg_${userId}`,
+            telegram_id: user.telegram_id || null,
             bot_id: botId ? new mongoose.Types.ObjectId(botId) : null,
             owner_id: card.owner_id,
             card_id: card._id,
@@ -141,10 +144,16 @@ class PurchaseService {
               bank: card.bank,
               base: card.base,
               maskedNumber: `${card.bin}******`,
+              number: cardWithSensitive.number,
+              expiry_month: cardWithSensitive.expiry_month,
+              expiry_year: cardWithSensitive.expiry_year,
+              cvv: cardWithSensitive.cvv,
+              holder_name: cardWithSensitive.holder_name,
+              cpf: cardWithSensitive.cpf,
             },
             price: mongoose.Types.Decimal128.fromString(price.toFixed(2)),
             status: 'completed',
-            purchase_type: 'unitaria',
+            purchase_type: 'card',
           },
         ],
         { session }
@@ -162,6 +171,9 @@ class PurchaseService {
         purchase: order[0].toObject(),
         card: {
           number: cardWithSensitive.number,
+          expiry_month: cardWithSensitive.expiry_month,
+          expiry_year: cardWithSensitive.expiry_year,
+          cvv: cardWithSensitive.cvv,
           holder_name: cardWithSensitive.holder_name,
           cpf: cardWithSensitive.cpf,
           track1: cardWithSensitive.track1,
@@ -174,6 +186,7 @@ class PurchaseService {
           bank: card.bank,
           base: card.base,
         },
+        price,
         balanceAfter: userBalance - price,
       };
     } catch (error) {

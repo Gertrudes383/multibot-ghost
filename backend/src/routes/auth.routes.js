@@ -80,9 +80,14 @@ router.post('/login', authLimiter, sanitizeInputs, login);
 router.post('/register', authLimiter, sanitizeInputs, register);
 
 router.post('/change-password', authenticate, sanitizeInputs, changePassword);
+router.put('/change-password', authenticate, sanitizeInputs, changePassword);
 router.get('/me', authenticate, getMe);
+router.get('/validate', authenticate, getMe);
+router.get('/profile', authenticate, getMe);
 router.get('/user-stats', authenticate, getUserStats);
 
 router.post('/refresh-token', sanitizeInputs, refreshToken);
+router.post('/refresh', sanitizeInputs, refreshToken);
+router.post('/logout', (_req, res) => res.json({ success: true }));
 
 module.exports = router;
