@@ -148,3 +148,25 @@ export const uploadLogo = (formData) => authApi('/admin/system/upload-logo', { m
 export const uploadHeaderLogo = (formData) => authApi('/admin/system/upload-header-logo', { method: 'POST', body: formData, headers: {} });
 export const getPurchaseValidationLogs = (params) => authApi(`/admin/system/purchase-validation-logs?${new URLSearchParams(params)}`);
 export const toggleBonusVisibility = (data) => authApi('/admin/system/bonus-visibility', { method: 'POST', body: JSON.stringify(data) });
+
+// --- Missing page-specific functions ---
+export const getAuxiliaryPool = (params) => authApi(`/admin/batches/auxiliary-pool?${new URLSearchParams(params || {})}`);
+export const uploadAuxiliaryPool = (data) => authApi('/admin/batches/auxiliary-pool/upload', { method: 'POST', body: JSON.stringify(data) });
+export const getBonusVisibility = (params) => authApi(`/admin/settings/key-value/bonus_visible?${new URLSearchParams(params || {})}`);
+export const updateBonusVisibility = (data) => authApi('/admin/system/bonus-visibility', { method: 'POST', body: JSON.stringify(data) });
+export const deleteCardDuplicates = (data) => authApi('/admin/cards/batch-delete', { method: 'POST', body: JSON.stringify(data) });
+export const getCardExportPreview = (params) => authApi(`/admin/cards/stats?${new URLSearchParams(params || {})}`);
+export const getGateways = (params) => authApi(`/admin/payments/gateways?${new URLSearchParams(params || {})}`);
+export const updateGateways = (id, data) => authApi(`/admin/payments/gateways/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const bulkGenerateGiftCards = (data) => authApi('/admin/telegram/gift-cards/bulk', { method: 'POST', body: JSON.stringify(data) });
+export const manualRecharge = (id, data) => authApi(`/admin/telegram/recharges/${id}/approve`, { method: 'POST', body: JSON.stringify(data) });
+export const getMixOffers = (params) => authApi(`/admin/batches/mix-offers?${new URLSearchParams(params || {})}`);
+export const createMixOffer = (data) => authApi('/admin/batches/mix-offers', { method: 'POST', body: JSON.stringify(data) });
+export const updateMixOffer = (id, data) => authApi(`/admin/batches/mix-offers/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const getDeadCards = (params) => authApi(`/admin/cards?${new URLSearchParams({ ...params, status: 'dead' })}`);
+export const getRechargeBonusSettings = (params) => authApi(`/admin/payments/recharge-bonus?${new URLSearchParams(params || {})}`);
+export const updateRechargeBonusSettings = (data) => authApi('/admin/payments/recharge-bonus', { method: 'PUT', body: JSON.stringify(data) });
+export const getStartImage = (params) => authApi(`/admin/telegram/start-image-proxy?${new URLSearchParams(params || {})}`);
+export const updateStartImage = (formData) => authApi('/admin/telegram/start-image', { method: 'POST', body: formData, headers: {} });
+export const createTelegramReference = (data) => authApi('/admin/telegram/references', { method: 'POST', body: JSON.stringify(data) });
+export const deleteTelegramReference = (id) => authApi(`/admin/telegram/references/${id}`, { method: 'DELETE' });
